@@ -1,0 +1,35 @@
+server:
+    contextPath: /garlo-searcher
+    port: 8087
+tomcat:
+    ajp:
+        port: 8095
+        remoteauthentication: false
+        #........... AJP is disabled in local machine.....#
+        enable: false
+management:
+    security:
+        enable: false
+spring:
+    application:
+        name: garlo-searcher
+endpoints:
+    enable: true
+    actuator:
+        enable: true
+    info:
+        enable: true
+        id: info
+        sensitive: true
+    logfile:
+        enable: true
+        external-file: logs/garlo-searcher.log
+        sensitive: true
+info:
+    app:
+        contact:
+            email: raudel24@gmail.com
+            name: 'garlo-searcher'
+        description: 'garlo-searcher'
+        name: garlo-searcher
+        version: '@project.version@'
