@@ -63,7 +63,7 @@ public class AlphavantageRouterImpl implements AlphavantageRouter{
             LOG.error("An error occurs reading TIME_SERIES_INTADAY from AlphavantageRouterImpl: {}",e.getMessage());
         }
 
-        wrtieCsv.savedAlphavantageTimeSeriesIntraday(quoteMap);
+        wrtieCsv.savedAlphavantageTimeSeriesIntraday(quoteMap, quote.getMetadata().getLastRefreshed());
         return quoteMap;
     }
 }

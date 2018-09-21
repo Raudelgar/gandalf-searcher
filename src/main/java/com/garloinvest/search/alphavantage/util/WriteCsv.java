@@ -1,10 +1,13 @@
 package com.garloinvest.search.alphavantage.util;
 
 import com.garloinvest.search.alphavantage.dto.AlphavantageQuotation;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,12 +24,21 @@ public class WriteCsv {
     private static final String HEADER = "date,open,high,low,close,volume";
 
 
-    public void savedAlphavantageTimeSeriesIntraday(Map<String, AlphavantageQuotation> quoteMap) {
+
+    public void savedAlphavantageTimeSeriesIntraday(Map<String, AlphavantageQuotation> quoteMap, String lastRefreshed) {
+
+        String lastDate = formatDate(lastRefreshed);
+        File file = new File("Quote"+lastDate+".csv");
+
+        if(file.exists()) {
+            return;
+        }
+
         LOG.info("Creating a new Quote file");
 
         PrintWriter printWriter = null;
         try {
-            printWriter = new PrintWriter(new FileWriter("Quote.csv"));
+            printWriter = new PrintWriter(new FileWriter("Quote"+lastDate+".csv"));
             StringBuilder sb = new StringBuilder();
             sb.append(HEADER);
             sb.append(NEW_LINE);
@@ -54,4 +66,10 @@ public class WriteCsv {
             printWriter.close();
         }
     }
+
+    private String formatDate(String lastRefreshed) {
+        StringBuilder date = new StringBuilder(StringUtils.replace(lastRefreshed," ","-"));
+        return StringUtils.replace(date.toString(),":","-").toString();
+    }
+
 }
