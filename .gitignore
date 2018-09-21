@@ -2,4 +2,7 @@
 target/
 out/
 logs/
+*.classpath
+*.project
+.settings/
 *.csv
