@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garloinvest.search.alphavantage.dto.AlphavantageQuotation;
 import com.garloinvest.search.alphavantage.dto.AlphavantageQuote;
 import com.garloinvest.search.alphavantage.router.AlphavantageRouter;
+import com.garloinvest.search.alphavantage.util.WriteCsv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,8 @@ public class AlphavantageRouterImpl implements AlphavantageRouter{
     private Environment environment;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private WriteCsv wrtieCsv;
     private final String TIME_SERIES_INTADAY = "alphavantage.time_series_intraday";
 
     @Override
@@ -53,11 +56,14 @@ public class AlphavantageRouterImpl implements AlphavantageRouter{
                 String jsonQuote = node.get(key).toString();
                 AlphavantageQuotation quotation = new ObjectMapper().readValue(jsonQuote, AlphavantageQuotation.class);
                 quoteMap.put(key,quotation);
+
             }
         } catch (IOException e) {
             e.printStackTrace();
             LOG.error("An error occurs reading TIME_SERIES_INTADAY from AlphavantageRouterImpl: {}",e.getMessage());
         }
+
+        wrtieCsv.savedAlphavantageTimeSeriesIntraday(quoteMap);
         return quoteMap;
     }
 }
