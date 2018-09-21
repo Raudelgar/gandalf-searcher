@@ -7,16 +7,16 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AlphavantageTimeSeries {
 
-    private Map<String, Quotation> intervalMap;
+    private Map<String, AlphavantageQuotation> intervalMap;
 
     public AlphavantageTimeSeries() {
     }
 
-    public Map<String, Quotation> getIntervalMap() {
+    public Map<String, AlphavantageQuotation> getIntervalMap() {
         return intervalMap;
     }
 
-    public void setIntervalMap(Map<String, Quotation> intervalMap) {
+    public void setIntervalMap(Map<String, AlphavantageQuotation> intervalMap) {
         this.intervalMap = intervalMap;
     }
 
@@ -27,12 +27,4 @@ public class AlphavantageTimeSeries {
                 '}';
     }
 
- /*   private String intervalMapPrint() {
-        StringBuilder result = new StringBuilder();
-        for(Map.Entry<String,Quotation> entry : intervalMap.entrySet()) {
-            result.append(entry.getKey()+":");
-            result.append("\n "+entry.getValue().getOpen());
-        }
-        return result.toString();
-    }*/
 }

@@ -8,8 +8,6 @@ public class AlphavantageQuote {
 
     @JsonProperty("Meta Data")
     private AlphavantageMetadata metadata;
-    @JsonProperty("Time Series (5min)")
-    private AlphavantageTimeSeries timeSeries;
 
     public AlphavantageQuote() {
     }
@@ -22,19 +20,10 @@ public class AlphavantageQuote {
         this.metadata = metadata;
     }
 
-    public AlphavantageTimeSeries getTimeSeries() {
-        return timeSeries;
-    }
-
-    public void setTimeSeries(AlphavantageTimeSeries timeSeries) {
-        this.timeSeries = timeSeries;
-    }
-
     @Override
     public String toString() {
         return "AlphavantageQuote{" +
                 "\n" + metadata +
-                "\n" + timeSeries +
                 '}';
     }
 }

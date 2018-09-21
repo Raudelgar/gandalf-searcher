@@ -3,9 +3,8 @@ package com.garloinvest.search.alphavantage.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.math.BigDecimal;
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Quotation {
+public class AlphavantageQuotation {
 
     @JsonProperty("1. open")
     private String open;
@@ -18,7 +17,7 @@ public class Quotation {
     @JsonProperty("5. volume")
     private String volume;
 
-    public Quotation() {
+    public AlphavantageQuotation() {
     }
 
     public String getOpen() {
@@ -63,7 +62,7 @@ public class Quotation {
 
     @Override
     public String toString() {
-        return "Quotation{" +
+        return "AlphavantageQuotation{" +
                 "open=" + open +
                 ", high=" + high +
                 ", low=" + low +
