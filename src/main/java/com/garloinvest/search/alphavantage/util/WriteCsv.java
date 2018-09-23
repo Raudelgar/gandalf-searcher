@@ -1,10 +1,9 @@
 package com.garloinvest.search.alphavantage.util;
 
-import com.garloinvest.search.alphavantage.dto.AlphavantageQuotation;
+import com.garloinvest.search.alphavantage.model.AlphavantageQuotation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
 import java.io.File;
