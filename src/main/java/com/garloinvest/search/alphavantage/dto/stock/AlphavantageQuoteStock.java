@@ -1,28 +1,28 @@
-package com.garloinvest.search.alphavantage.dto;
+package com.garloinvest.search.alphavantage.dto.stock;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AlphavantageQuote {
+public class AlphavantageQuoteStock {
 
     @JsonProperty("Meta Data")
-    private AlphavantageMetadata metadata;
+    private AlphavantageMetadataStock metadata;
 
-    public AlphavantageQuote() {
+    public AlphavantageQuoteStock() {
     }
 
-    public AlphavantageMetadata getMetadata() {
+    public AlphavantageMetadataStock getMetadata() {
         return metadata;
     }
 
-    public void setMetadata(AlphavantageMetadata metadata) {
+    public void setMetadata(AlphavantageMetadataStock metadata) {
         this.metadata = metadata;
     }
 
     @Override
     public String toString() {
-        return "AlphavantageQuote{" +
+        return "AlphavantageQuoteStock{" +
                 "\n" + metadata +
                 '}';
     }
