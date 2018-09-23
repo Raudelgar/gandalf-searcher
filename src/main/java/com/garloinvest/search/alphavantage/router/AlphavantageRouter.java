@@ -7,4 +7,5 @@ import java.util.Map;
 public interface AlphavantageRouter {
 
     public Map<String, AlphavantageQuotation> readAlphavantageTimeSeriesIntraday();
+    public Map<String, AlphavantageQuotation> readAlphavantageCurrencyExchangeRate();
 }

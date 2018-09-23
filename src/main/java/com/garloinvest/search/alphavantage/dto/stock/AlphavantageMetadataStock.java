@@ -1,10 +1,10 @@
-package com.garloinvest.search.alphavantage.dto;
+package com.garloinvest.search.alphavantage.dto.stock;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AlphavantageMetadata {
+public class AlphavantageMetadataStock {
 
     @JsonProperty("2. Symbol")
     private String symbol;
@@ -13,7 +13,7 @@ public class AlphavantageMetadata {
     @JsonProperty("4. Interval")
     private String interval;
 
-    public AlphavantageMetadata() {
+    public AlphavantageMetadataStock() {
     }
 
     public String getSymbol() {
@@ -42,7 +42,7 @@ public class AlphavantageMetadata {
 
     @Override
     public String toString() {
-        return "AlphavantageMetadata:" +
+        return "AlphavantageMetadataStock:" +
                 "\n symbol='" + symbol + '\'' +
                 "\n lastRefreshed='" + lastRefreshed + '\'' +
                 "\n interval='" + interval + '\'';
