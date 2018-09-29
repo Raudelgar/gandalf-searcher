@@ -6,10 +6,10 @@
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/garlo-searcher.log</file>
+        <file>logs/gandalf-searcher.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- Daily rollover -->
-            <fileNamePattern>logs/garlo-searcher.%d{yyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>logs/gandalf-searcher.%d{yyy-MM-dd}.log.gz</fileNamePattern>
             <!-- keep 2 days worth history capped at 1GB total size -->
             <maxHistory>2</maxHistory>
             <totalSizeCap>200MB</totalSizeCap>

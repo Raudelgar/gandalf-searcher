@@ -1,5 +1,5 @@
 server:
-    contextPath: /garlo-searcher
+    contextPath: /gandalf-searcher
     port: 8087
 tomcat:
     ajp:
@@ -12,7 +12,7 @@ management:
         enable: false
 spring:
     application:
-        name: garlo-searcher
+        name: gandalf-searcher
 endpoints:
     enable: true
     actuator:
@@ -23,13 +23,13 @@ endpoints:
         sensitive: true
     logfile:
         enable: true
-        external-file: logs/garlo-searcher.log
+        external-file: logs/gandalf-searcher.log
         sensitive: true
 info:
     app:
         contact:
             email: raudel24@gmail.com
-            name: 'garlo-searcher'
-        description: 'garlo-searcher'
-        name: garlo-searcher
+            name: 'gandalf-searcher'
+        description: 'gandalf-searcher'
+        name: gandalf-searcher
         version: '@project.version@'
