@@ -40,7 +40,7 @@ public class AlphavantageRouterImpl implements AlphavantageRouter{
     private static final String FX_INTRADAY = "alphavantage.fx_intraday";
 
     //    @Scheduled(cron = "0 0/5 * ? * MON-FRI")
-    @Scheduled(fixedRate = 1000)
+//    @Scheduled(fixedRate = 1000)
     public void init() {
         readAlphavantageFX_FXIntraday();
         readAlphavantageFX_CurrencyExchangeRate();
