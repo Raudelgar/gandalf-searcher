@@ -40,11 +40,12 @@ public class OandaRouterImpl implements OandaRouter {
     private OandaConnectionFXPractice connection;
 
 //    @Scheduled(cron = "0 0/1 * ? * MON-FRI")
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 1000)
     public void init() {
-//        readOandaInstrumentPrice();
-//        testreadOandaInstrumentPrice(readOandaInstrumentPrice());
-        testreadOandaInstrumentCandlestick(readOandaInstrumentCandlestickPerMinute());
+        List<String> instruments = new ArrayList<>(Arrays.asList(FX.EUR_USD.toString(),FX.EUR_JPY.toString(),FX.USD_JPY.toString()));
+        String instrumentName = FX.EUR_USD.toString();
+        testreadOandaInstrumentPrice(readOandaInstrumentPrice(instruments));
+//        testreadOandaInstrumentCandlestick(readOandaInstrumentCandlestickPerMinute(instrumentName));
     }
 
     private void testreadOandaInstrumentCandlestick(Map<String, Map<LocalDateTime, OandaInstrumentCandlestick>> instrumentMap) {
@@ -81,11 +82,11 @@ public class OandaRouterImpl implements OandaRouter {
     }
 
     @Override
-    public Map<String, Map<LocalDateTime, OandaInstrumentCandlestick>> readOandaInstrumentCandlestickPerMinute() {
+    public Map<String, Map<LocalDateTime, OandaInstrumentCandlestick>> readOandaInstrumentCandlestickPerMinute(String instrumentName) {
         Map<String, Map<LocalDateTime, OandaInstrumentCandlestick>> instrument_candle_map = new HashMap<>();
         Map<LocalDateTime, OandaInstrumentCandlestick> candlestickMap = new TreeMap<>();
         Context context = connection.getConnectionFXPractice();
-        InstrumentCandlesRequest request = new InstrumentCandlesRequest(new InstrumentName(FX.EUR_USD.toString()));
+        InstrumentCandlesRequest request = new InstrumentCandlesRequest(new InstrumentName(instrumentName));
         request.setGranularity(CandlestickGranularity.M1);
 
         try {
@@ -116,10 +117,9 @@ public class OandaRouterImpl implements OandaRouter {
     }
 
     @Override
-    public Map<String, OandaInstrumentPrice> readOandaInstrumentPrice() {
+    public Map<String, OandaInstrumentPrice> readOandaInstrumentPrice(List<String> instruments) {
         Map<String,OandaInstrumentPrice> bid_ask_price_map = new HashMap<>();
         Context context = connection.getConnectionFXPractice();
-        List<String> instruments = new ArrayList<>(Arrays.asList(FX.EUR_USD.toString(),FX.EUR_JPY.toString(),FX.USD_JPY.toString()));
         PricingGetRequest request = new PricingGetRequest(new AccountID(environment.getProperty("oanda.fxTradePractice.accountId")),instruments);
         try {
             PricingGetResponse response = context.pricing.get(request);
@@ -127,7 +127,7 @@ public class OandaRouterImpl implements OandaRouter {
             for(ClientPrice clientPrice : response.getPrices()) {
                 OandaInstrumentPrice priceNow = new OandaInstrumentPrice();
                 priceNow.setTradeable(clientPrice.getTradeable());
-                priceNow.setTime(clientPrice.getTime());
+                priceNow.setTime(DateUtil.convertFromOandaDateTimeToJavaLocalDateTime(clientPrice.getTime()));
                 for(PriceBucket priceBucket : clientPrice.getBids()) {
                     priceNow.setSell(priceBucket.getPrice().bigDecimalValue());
                     priceNow.setLiquiditySell(priceBucket.getLiquidity());

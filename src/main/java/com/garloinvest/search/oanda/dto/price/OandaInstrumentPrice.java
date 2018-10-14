@@ -3,11 +3,13 @@ package com.garloinvest.search.oanda.dto.price;
 import com.oanda.v20.primitives.DateTime;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class OandaInstrumentPrice {
 
     private boolean tradeable;
-    private DateTime time;
+//    private DateTime time;
+    private LocalDateTime time;
     private BigDecimal sell; //Bid
     private Long liquiditySell;
     private BigDecimal buy; //Ask
@@ -24,13 +26,21 @@ public class OandaInstrumentPrice {
         this.tradeable = tradeable;
     }
 
-    public DateTime getTime() {
+    public LocalDateTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalDateTime time) {
+        this.time = time;
+    }
+
+    /*public DateTime getTime() {
         return time;
     }
 
     public void setTime(DateTime time) {
         this.time = time;
-    }
+    }*/
 
     public BigDecimal getSell() {
         return sell;
