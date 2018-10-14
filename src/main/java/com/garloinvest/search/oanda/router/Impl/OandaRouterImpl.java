@@ -1,36 +1,24 @@
 package com.garloinvest.search.oanda.router.Impl;
 
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.garloinvest.search.connection.ConnectionOandaFXPractice;
-import com.garloinvest.search.constants.GlobalConstants;
-import com.garloinvest.search.oanda.dto.candle.CandleInstrument;
-import com.garloinvest.search.oanda.model.OandaInstrumentPrice;
+import com.garloinvest.search.oanda.connection.OandaConnectionFXPractice;
+import com.garloinvest.search.oanda.dto.candle.OandaInstrumentCandlestick;
+import com.garloinvest.search.oanda.dto.price.OandaInstrumentPrice;
 import com.garloinvest.search.oanda.router.OandaRouter;
+import com.garloinvest.search.oanda.util.DateUtil;
 import com.garloinvest.search.portfolio.FX;
 import com.oanda.v20.Context;
-import com.oanda.v20.ContextBuilder;
 import com.oanda.v20.ExecuteException;
 import com.oanda.v20.RequestException;
 import com.oanda.v20.account.AccountID;
-import com.oanda.v20.account.AccountSummary;
+import com.oanda.v20.instrument.Candlestick;
+import com.oanda.v20.instrument.CandlestickGranularity;
+import com.oanda.v20.instrument.InstrumentCandlesRequest;
+import com.oanda.v20.instrument.InstrumentCandlesResponse;
 import com.oanda.v20.pricing.*;
-import com.oanda.v20.pricing_common.Price;
 import com.oanda.v20.pricing_common.PriceBucket;
 import com.oanda.v20.primitives.DateTime;
-import com.sun.prism.shader.Solid_TextureYV12_AlphaTest_Loader;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.util.EntityUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
+import com.oanda.v20.primitives.InstrumentName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +27,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -51,23 +35,35 @@ public class OandaRouterImpl implements OandaRouter {
     private static final Logger LOG = LoggerFactory.getLogger(OandaRouterImpl.class);
 
     @Autowired
-    private RestTemplate restTemplate;
-    @Autowired
     private Environment environment;
     @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    private ConnectionOandaFXPractice connection;
-    private static final String DOMAIN = "oanda.fxpracticeapi.domain";
-    private static final String INSTRUMENTS_PATH = "oanda.fxpracticeapi.restv20.instruments";
-    private static final String CANDLES_PATH = "oanda.fxpracticeapi.restv20.instruments.candles";
-    private static final String TOKEN = "oanda.fxTradePractice.token";
+    private OandaConnectionFXPractice connection;
 
 //    @Scheduled(cron = "0 0/1 * ? * MON-FRI")
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 60000)
     public void init() {
 //        readOandaInstrumentPrice();
-        testreadOandaInstrumentPrice(readOandaInstrumentPrice());
+//        testreadOandaInstrumentPrice(readOandaInstrumentPrice());
+        testreadOandaInstrumentCandlestick(readOandaInstrumentCandlestickPerMinute());
+    }
+
+    private void testreadOandaInstrumentCandlestick(Map<String, Map<LocalDateTime, OandaInstrumentCandlestick>> instrumentMap) {
+        for(Map.Entry<String, Map<LocalDateTime, OandaInstrumentCandlestick>> entryInstrument : instrumentMap.entrySet()) {
+            Map<LocalDateTime, OandaInstrumentCandlestick> candleMap = entryInstrument.getValue();
+            System.out.println("How Many Candles: ->"+candleMap.size());
+            System.out.println("Instrument ->"+entryInstrument.getKey());
+            for(Map.Entry<LocalDateTime, OandaInstrumentCandlestick> entryCandle : candleMap.entrySet()) {
+                OandaInstrumentCandlestick candlestick = entryCandle.getValue();
+                System.out.println("        Time ->"+candlestick.getTime());
+                System.out.println("        isCompleted ->"+candlestick.isComplete());
+                System.out.println("        Volume: "+candlestick.getVolume());
+                System.out.println("        Open: "+candlestick.getOpen());
+                System.out.println("        Close: "+candlestick.getClose());
+                System.out.println("        High: "+candlestick.getHigh());
+                System.out.println("        Low: "+candlestick.getLow());
+                System.out.println("------------------------------");
+            }
+        }
     }
 
     private void testreadOandaInstrumentPrice(Map<String, OandaInstrumentPrice> map) {
@@ -85,8 +81,38 @@ public class OandaRouterImpl implements OandaRouter {
     }
 
     @Override
-    public Map<String, CandleInstrument> readOandaInstrumentCandleStickPerMinute() {
-        return null;
+    public Map<String, Map<LocalDateTime, OandaInstrumentCandlestick>> readOandaInstrumentCandlestickPerMinute() {
+        Map<String, Map<LocalDateTime, OandaInstrumentCandlestick>> instrument_candle_map = new HashMap<>();
+        Map<LocalDateTime, OandaInstrumentCandlestick> candlestickMap = new TreeMap<>();
+        Context context = connection.getConnectionFXPractice();
+        InstrumentCandlesRequest request = new InstrumentCandlesRequest(new InstrumentName(FX.EUR_USD.toString()));
+        request.setGranularity(CandlestickGranularity.M1);
+
+        try {
+            InstrumentCandlesResponse response = context.instrument.candles(request);
+            LOG.info("Response Executed for Instrument -> {} at every -> {}", response.getInstrument(), response.getGranularity().toString());
+            for(Candlestick candlestick: response.getCandles()) {
+                OandaInstrumentCandlestick candlestickNow = new OandaInstrumentCandlestick();
+                candlestickNow.setTime(DateUtil.convertFromOandaDateTimeToJavaLocalDateTime(candlestick.getTime()));
+                candlestickNow.setComplete(candlestick.getComplete());
+                candlestickNow.setVolume(candlestick.getVolume());
+                candlestickNow.setOpen(candlestick.getMid().getO().bigDecimalValue());
+                candlestickNow.setOpen(candlestick.getMid().getC().bigDecimalValue());
+                candlestickNow.setOpen(candlestick.getMid().getH().bigDecimalValue());
+                candlestickNow.setOpen(candlestick.getMid().getL().bigDecimalValue());
+
+                candlestickMap.put(candlestickNow.getTime(),candlestickNow);
+                instrument_candle_map.put(response.getInstrument().toString(),candlestickMap);
+            }
+        } catch (RequestException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ExecuteException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return instrument_candle_map;
     }
 
     @Override

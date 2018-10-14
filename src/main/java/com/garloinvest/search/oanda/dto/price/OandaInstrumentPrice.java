@@ -1,4 +1,4 @@
-package com.garloinvest.search.oanda.model;
+package com.garloinvest.search.oanda.dto.price;
 
 import com.oanda.v20.primitives.DateTime;
 
@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public class OandaInstrumentPrice {
 
-    private boolean isTradeable;
+    private boolean tradeable;
     private DateTime time;
     private BigDecimal sell; //Bid
     private Long liquiditySell;
@@ -17,11 +17,11 @@ public class OandaInstrumentPrice {
     }
 
     public boolean isTradeable() {
-        return isTradeable;
+        return tradeable;
     }
 
     public void setTradeable(boolean tradeable) {
-        isTradeable = tradeable;
+        this.tradeable = tradeable;
     }
 
     public DateTime getTime() {
@@ -67,7 +67,7 @@ public class OandaInstrumentPrice {
     @Override
     public String toString() {
         return "OandaInstrumentPrice{" +
-                "isTradeable=" + isTradeable +
+                "tradeable=" + tradeable +
                 ", time=" + time +
                 ", sell=" + sell +
                 ", liquiditySell=" + liquiditySell +

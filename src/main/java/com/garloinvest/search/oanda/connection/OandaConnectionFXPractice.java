@@ -1,4 +1,4 @@
-package com.garloinvest.search.connection;
+package com.garloinvest.search.oanda.connection;
 
 import com.oanda.v20.Context;
 import com.oanda.v20.ContextBuilder;
@@ -9,8 +9,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ConnectionOandaFXPractice {
-    private static final Logger LOG = LoggerFactory.getLogger(ConnectionOandaFXPractice.class);
+public class OandaConnectionFXPractice {
+    private static final Logger LOG = LoggerFactory.getLogger(OandaConnectionFXPractice.class);
 
     @Autowired
     private Environment environment;
