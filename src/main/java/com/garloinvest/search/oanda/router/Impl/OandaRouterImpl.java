@@ -1,11 +1,11 @@
 package com.garloinvest.search.oanda.router.Impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.garloinvest.search.oanda.connection.OandaConnectionFXPractice;
 import com.garloinvest.search.oanda.dto.candle.OandaInstrumentCandlestick;
 import com.garloinvest.search.oanda.dto.price.OandaInstrumentPrice;
 import com.garloinvest.search.oanda.router.OandaRouter;
 import com.garloinvest.search.oanda.util.DateUtil;
+import com.garloinvest.search.oanda.util.OandaWriteCsv;
 import com.garloinvest.search.portfolio.FX;
 import com.oanda.v20.Context;
 import com.oanda.v20.ExecuteException;
@@ -17,7 +17,6 @@ import com.oanda.v20.instrument.InstrumentCandlesRequest;
 import com.oanda.v20.instrument.InstrumentCandlesResponse;
 import com.oanda.v20.pricing.*;
 import com.oanda.v20.pricing_common.PriceBucket;
-import com.oanda.v20.primitives.DateTime;
 import com.oanda.v20.primitives.InstrumentName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -38,15 +36,24 @@ public class OandaRouterImpl implements OandaRouter {
     private Environment environment;
     @Autowired
     private OandaConnectionFXPractice connection;
+    @Autowired
+    private OandaWriteCsv writeCsv;
 
 //    @Scheduled(cron = "0 0/1 * ? * MON-FRI")
     @Scheduled(fixedRate = 1000)
-    public void init() {
-        List<String> instruments = new ArrayList<>(Arrays.asList(FX.EUR_USD.toString(),FX.EUR_JPY.toString(),FX.USD_JPY.toString()));
-        String instrumentName = FX.EUR_USD.toString();
+    public void callInstrumentPrice() {
+//        List<String> instruments = new ArrayList<>(Arrays.asList(FX.EUR_USD.toString(),FX.EUR_JPY.toString(),FX.USD_JPY.toString()));
+        List<String> instruments = new ArrayList<>(Arrays.asList(FX.EUR_USD.toString()));
+//        readOandaInstrumentPrice(instruments);
         testreadOandaInstrumentPrice(readOandaInstrumentPrice(instruments));
 //        testreadOandaInstrumentCandlestick(readOandaInstrumentCandlestickPerMinute(instrumentName));
     }
+
+   /* @Scheduled(fixedRate = 60000)
+    public void callCandlestickEvryMinute() {
+        String instrumentName = FX.EUR_USD.toString();
+        readOandaInstrumentCandlestickPerMinute(instrumentName);
+    }*/
 
     private void testreadOandaInstrumentCandlestick(Map<String, Map<LocalDateTime, OandaInstrumentCandlestick>> instrumentMap) {
         for(Map.Entry<String, Map<LocalDateTime, OandaInstrumentCandlestick>> entryInstrument : instrumentMap.entrySet()) {
@@ -98,9 +105,9 @@ public class OandaRouterImpl implements OandaRouter {
                 candlestickNow.setComplete(candlestick.getComplete());
                 candlestickNow.setVolume(candlestick.getVolume());
                 candlestickNow.setOpen(candlestick.getMid().getO().bigDecimalValue());
-                candlestickNow.setOpen(candlestick.getMid().getC().bigDecimalValue());
-                candlestickNow.setOpen(candlestick.getMid().getH().bigDecimalValue());
-                candlestickNow.setOpen(candlestick.getMid().getL().bigDecimalValue());
+                candlestickNow.setClose(candlestick.getMid().getC().bigDecimalValue());
+                candlestickNow.setHigh(candlestick.getMid().getH().bigDecimalValue());
+                candlestickNow.setLow(candlestick.getMid().getL().bigDecimalValue());
 
                 candlestickMap.put(candlestickNow.getTime(),candlestickNow);
                 instrument_candle_map.put(response.getInstrument().toString(),candlestickMap);
@@ -113,6 +120,7 @@ public class OandaRouterImpl implements OandaRouter {
             e.printStackTrace();
         }
 
+        writeCsv.compareLastTwoCandlestick(instrument_candle_map);
         return instrument_candle_map;
     }
 
@@ -146,6 +154,7 @@ public class OandaRouterImpl implements OandaRouter {
             e.printStackTrace();
             LOG.error("Error with Execution -> {}", e.getMessage());
         }
+        writeCsv.checkCurrentInstrumentPrice(bid_ask_price_map);
         return bid_ask_price_map;
     }
 }

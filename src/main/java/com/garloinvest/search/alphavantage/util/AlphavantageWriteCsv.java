@@ -16,8 +16,8 @@ import java.util.Map;
  * A temperately Database
  */
 @Repository
-public class WriteCsv {
-    private static final Logger LOG = LoggerFactory.getLogger(WriteCsv.class);
+public class AlphavantageWriteCsv {
+    private static final Logger LOG = LoggerFactory.getLogger(AlphavantageWriteCsv.class);
     private static final String DELIMITER = ",";
     private static final String NEW_LINE = "\n";
     private static final String HEADER = "date,open,high,low,close,volume";

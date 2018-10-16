@@ -7,12 +7,11 @@ import com.garloinvest.search.alphavantage.dto.forex.AlphavantageQuoteFX;
 import com.garloinvest.search.alphavantage.dto.stock.AlphavantageQuoteStock;
 import com.garloinvest.search.alphavantage.model.AlphavantageQuotationRate;
 import com.garloinvest.search.alphavantage.router.AlphavantageRouter;
-import com.garloinvest.search.alphavantage.util.WriteCsv;
+import com.garloinvest.search.alphavantage.util.AlphavantageWriteCsv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -34,7 +33,7 @@ public class AlphavantageRouterImpl implements AlphavantageRouter{
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private WriteCsv wrtieCsv;
+    private AlphavantageWriteCsv wrtieCsv;
     private static final String TIME_SERIES_INTADAY = "alphavantage.time_series_intraday";
     private static final String CURRENCY_EXCHANGE_RATE = "alphavantage.currency_exchange_rate";
     private static final String FX_INTRADAY = "alphavantage.fx_intraday";
