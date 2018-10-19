@@ -44,18 +44,18 @@ public class OandaRouterImpl implements OandaRouter {
     public void callInstrumentPrice() {
 //        List<String> instruments = new ArrayList<>(Arrays.asList(FX.EUR_USD.toString(),FX.EUR_JPY.toString(),FX.USD_JPY.toString()));
         List<String> instruments = new ArrayList<>(Arrays.asList(FX.EUR_USD.toString()));
-//        readOandaInstrumentPrice(instruments);
-        testreadOandaInstrumentPrice(readOandaInstrumentPrice(instruments));
+        readOandaInstrumentPrice(instruments);
+//        testreadOandaInstrumentPrice(readOandaInstrumentPrice(instruments));
 //        testreadOandaInstrumentCandlestick(readOandaInstrumentCandlestickPerMinute(instrumentName));
     }
 
-   /* @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 60000)
     public void callCandlestickEvryMinute() {
         String instrumentName = FX.EUR_USD.toString();
         readOandaInstrumentCandlestickPerMinute(instrumentName);
-    }*/
+    }
 
-    private void testreadOandaInstrumentCandlestick(Map<String, Map<LocalDateTime, OandaInstrumentCandlestick>> instrumentMap) {
+    public void testreadOandaInstrumentCandlestick(Map<String, Map<LocalDateTime, OandaInstrumentCandlestick>> instrumentMap) {
         for(Map.Entry<String, Map<LocalDateTime, OandaInstrumentCandlestick>> entryInstrument : instrumentMap.entrySet()) {
             Map<LocalDateTime, OandaInstrumentCandlestick> candleMap = entryInstrument.getValue();
             System.out.println("How Many Candles: ->"+candleMap.size());
@@ -74,7 +74,7 @@ public class OandaRouterImpl implements OandaRouter {
         }
     }
 
-    private void testreadOandaInstrumentPrice(Map<String, OandaInstrumentPrice> map) {
+    public void testreadOandaInstrumentPrice(Map<String, OandaInstrumentPrice> map) {
         for(Map.Entry<String, OandaInstrumentPrice> entry : map.entrySet()) {
             System.out.println("Instrument ->"+entry.getKey());
             OandaInstrumentPrice price = entry.getValue();
