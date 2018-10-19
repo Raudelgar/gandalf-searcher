@@ -5,8 +5,6 @@ import com.garloinvest.search.oanda.dto.candle.OandaInstrumentCandlestick;
 import com.garloinvest.search.oanda.dto.price.OandaInstrumentPrice;
 import com.garloinvest.search.oanda.router.OandaRouter;
 import com.garloinvest.search.oanda.util.DateUtil;
-import com.garloinvest.search.oanda.util.OandaWriteCsv;
-import com.garloinvest.search.portfolio.FX;
 import com.oanda.v20.Context;
 import com.oanda.v20.ExecuteException;
 import com.oanda.v20.RequestException;
@@ -22,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -36,57 +33,7 @@ public class OandaRouterImpl implements OandaRouter {
     private Environment environment;
     @Autowired
     private OandaConnectionFXPractice connection;
-    @Autowired
-    private OandaWriteCsv writeCsv;
 
-//    @Scheduled(cron = "0 0/1 * ? * MON-FRI")
-    @Scheduled(fixedRate = 1000)
-    public void callInstrumentPrice() {
-//        List<String> instruments = new ArrayList<>(Arrays.asList(FX.EUR_USD.toString(),FX.EUR_JPY.toString(),FX.USD_JPY.toString()));
-        List<String> instruments = new ArrayList<>(Arrays.asList(FX.EUR_USD.toString()));
-        readOandaInstrumentPrice(instruments);
-//        testreadOandaInstrumentPrice(readOandaInstrumentPrice(instruments));
-//        testreadOandaInstrumentCandlestick(readOandaInstrumentCandlestickPerMinute(instrumentName));
-    }
-
-    @Scheduled(fixedRate = 60000)
-    public void callCandlestickEvryMinute() {
-        String instrumentName = FX.EUR_USD.toString();
-        readOandaInstrumentCandlestickPerMinute(instrumentName);
-    }
-
-    public void testreadOandaInstrumentCandlestick(Map<String, Map<LocalDateTime, OandaInstrumentCandlestick>> instrumentMap) {
-        for(Map.Entry<String, Map<LocalDateTime, OandaInstrumentCandlestick>> entryInstrument : instrumentMap.entrySet()) {
-            Map<LocalDateTime, OandaInstrumentCandlestick> candleMap = entryInstrument.getValue();
-            System.out.println("How Many Candles: ->"+candleMap.size());
-            System.out.println("Instrument ->"+entryInstrument.getKey());
-            for(Map.Entry<LocalDateTime, OandaInstrumentCandlestick> entryCandle : candleMap.entrySet()) {
-                OandaInstrumentCandlestick candlestick = entryCandle.getValue();
-                System.out.println("        Time ->"+candlestick.getTime());
-                System.out.println("        isCompleted ->"+candlestick.isComplete());
-                System.out.println("        Volume: "+candlestick.getVolume());
-                System.out.println("        Open: "+candlestick.getOpen());
-                System.out.println("        Close: "+candlestick.getClose());
-                System.out.println("        High: "+candlestick.getHigh());
-                System.out.println("        Low: "+candlestick.getLow());
-                System.out.println("------------------------------");
-            }
-        }
-    }
-
-    public void testreadOandaInstrumentPrice(Map<String, OandaInstrumentPrice> map) {
-        for(Map.Entry<String, OandaInstrumentPrice> entry : map.entrySet()) {
-            System.out.println("Instrument ->"+entry.getKey());
-            OandaInstrumentPrice price = entry.getValue();
-            System.out.println("Time ->"+price.getTime());
-            System.out.println("isTradeable ->"+price.isTradeable());
-            System.out.println("Buy ->"+price.getBuy());
-            System.out.println("LiquidityBuy ->"+price.getLiquidityBuy());
-            System.out.println("Sell ->"+price.getSell());
-            System.out.println("LiquiditySell ->"+price.getLiquiditySell());
-            System.out.println("------------------------------");
-        }
-    }
 
     @Override
     public Map<String, Map<LocalDateTime, OandaInstrumentCandlestick>> readOandaInstrumentCandlestickPerMinute(String instrumentName) {
@@ -119,8 +66,6 @@ public class OandaRouterImpl implements OandaRouter {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-        writeCsv.compareLastTwoCandlestick(instrument_candle_map);
         return instrument_candle_map;
     }
 
@@ -154,7 +99,6 @@ public class OandaRouterImpl implements OandaRouter {
             e.printStackTrace();
             LOG.error("Error with Execution -> {}", e.getMessage());
         }
-        writeCsv.checkCurrentInstrumentPrice(bid_ask_price_map);
         return bid_ask_price_map;
     }
 }
