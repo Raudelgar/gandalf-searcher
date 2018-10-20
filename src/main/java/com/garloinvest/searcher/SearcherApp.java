@@ -12,6 +12,7 @@ public class SearcherApp {
     private static final Logger LOG = LoggerFactory.getLogger(SearcherApp.class);
 
     public static void main(String[] args) {
+    	LOG.info("*******   Starting GANDALF-SEARCHER APP  *******");
         SpringApplication.run(SearcherApp.class);
     }
 
