@@ -20,7 +20,7 @@
     </appender>
 
     <logger name="org.springframework" level="info" />
-    <logger name="com.garloinvest.search" level="debug" />
+    <logger name="com.garloinvest.searcher" level="debug" />
 
     <root level="debug">
         <appender-ref ref="STDOUT" />
